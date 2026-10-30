@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="DataVista — Student Research and Analytics Dashboard for AI Tools Usage.">
+    <title>DataVista | Student Research & Analytics</title>
+
+
+<link rel="stylesheet" href="style.css">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+<script src="script.js" defer></script>
+
+
+</head>
+
+<body>
+<div class="app-container">
+
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+    <div class="brand">
+        <div class="brand-icon">D</div>
+        <div class="brand-text">
+            <h2>DataVista</h2>
+            <p>STUDENT RESEARCH &amp; ANALYTICS</p>
+        </div>
+    </div>
+
+    <p class="sidebar-label">WORKSPACE</p>
+
+    <nav class="navigation">
+        <button class="nav-item active" data-page="overview">
+            <span class="nav-icon">▦</span>
+            <span>Overview</span>
+        </button>
+
+        <button class="nav-item" data-page="usage">
+            <span class="nav-icon">▤</span>
+            <span>AI Tool Usage</span>
+        </button>
+
+        <button class="nav-item" data-page="experience">
+            <span class="nav-icon">◷</span>
+            <span>Student Experience</span>
+        </button>
+
+        <button class="nav-item" data-page="comparison">
+            <span class="nav-icon">▥</span>
+            <span>Tool Comparison</span>
+        </button>
+    </nav>
+
+    <div class="sidebar-bottom">
+        <div class="project-status">
+            <span class="status-dot"></span>
+            <span>Research Dashboard</span>
+        </div>
+
+        <div class="sidebar-footer">
+            <p>DataVista</p>
+            <p>Student Research &amp; Analytics</p>
+        </div>
+    </div>
+</aside>
+
+<!-- MAIN CONTENT -->
+<main class="main-content">
+
+    <!-- TOPBAR -->
+    <header class="topbar">
+        <div class="breadcrumb">
+            <span>DataVista</span>
+            <span class="breadcrumb-divider">/</span>
+            <strong id="breadcrumb-current">Overview</strong>
+        </div>
+
+        <div class="topbar-right">
+            <span class="data-status" id="data-status">Loading data...</span>
+            <div class="profile-avatar" aria-label="DataVista dashboard">DV</div>
+        </div>
+    </header>
+
+    <!-- PAGE 1: OVERVIEW -->
+    <section class="page active" id="overview">
+
+        <div class="page-heading">
+            <div>
+                <p class="eyebrow">STUDENT RESEARCH DASHBOARD</p>
+                <h1>AI Tools Usage Analytics</h1>
+                <p class="page-description">
+                    Explore how students use AI tools, their experiences,
+                    and the perceived impact on learning and productivity.
+                </p>
+            </div>
+
+            <button class="secondary-button" id="reset-filters">
+                Reset Filters
+            </button>
+        </div>
+
+        <!-- FILTERS -->
+        <section class="filter-panel">
+            <div class="filter-heading">
+                <div>
+                    <h3>Explore the Data</h3>
+                    <p>Use filters to explore student responses.</p>
+                </div>
+                <div class="filter-icon">⌕</div>
+            </div>
+
+            <div class="filter-controls">
+                <label class="filter-field">
+                    <span>Academic Year</span>
+                    <select id="filter-year">
+                        <option value="all">All Years</option>
+                    </select>
+                </label>
+
+                <label class="filter-field">
+                    <span>AI Tool</span>
+                    <select id="filter-tool">
+                        <option value="all">All Tools</option>
+                    </select>
+                </label>
+
+                <label class="filter-field">
+                    <span>Usage Frequency</span>
+                    <select id="filter-frequency">
+                        <option value="all">All Frequencies</option>
+                    </select>
+                </label>
+
+                <label class="filter-field">
+                    <span>Overall Experience</span>
+                    <select id="filter-experience">
+                        <option value="all">All Experiences</option>
+                    </select>
+                </label>
+            </div>
+
+            <p class="active-filters" id="active-filters">
+                Showing all available responses
+            </p>
+        </section>
+
+        <!-- KPI CARDS -->
+        <section class="kpi-grid">
+            <article class="kpi-card">
+                <div class="kpi-top">
+                    <span class="kpi-label">Total Responses</span>
+                    <span class="kpi-icon blue">▤</span>
+                </div>
+                <h2 id="kpi-total">—</h2>
+                <p class="kpi-caption">Student survey responses</p>
+            </article>
+
+            <article class="kpi-card">
+                <div class="kpi-top">
+                    <span class="kpi-label">Most Used Tool</span>
+                    <span class="kpi-icon purple">◈</span>
+                </div>
+                <h2 class="kpi-text" id="kpi-top-tool">—</h2>
+                <p class="kpi-caption">Based on recorded responses</p>
+            </article>
+
+            <article class="kpi-card">
+                <div class="kpi-top">
+                    <span class="kpi-label">Frequent Users</span>
+                    <span class="kpi-icon green">↗</span>
+                </div>
+                <h2 id="kpi-frequent">—</h2>
+                <p class="kpi-caption">Based on usage frequency</p>
+            </article>
+
+            <article class="kpi-card">
+                <div class="kpi-top">
+                    <span class="kpi-label">Positive Experience</span>
+                    <span class="kpi-icon orange">✓</span>
+                </div>
+                <h2 id="kpi-positive">—</h2>
+                <p class="kpi-caption">Based on experience responses</p>
+            </article>
+        </section>
+
+        <!-- OVERVIEW CHARTS -->
+        <section class="chart-grid">
+
+            <article class="chart-card">
+                <div class="chart-header">
+                    <div>
+                        <h3>Most Used AI Tools</h3>
+                        <p>Distribution of students' main AI tools.</p>
+                    </div>
+                    <span class="chart-tag">TOOL USAGE</span>
+                </div>
+                <div class="chart-container">
+                    <canvas id="chart-tools"></canvas>
+                </div>
+            </article>
+
+            <article class="chart-card">
+                <div class="chart-header">
+                    <div>
+                        <h3>AI Usage Frequency</h3>
+                        <p>How often students use AI tools.</p>
+                    </div>
+                    <span class="chart-tag">FREQUENCY</span>
+                </div>
+                <div class="chart-container">
+                    <canvas id="chart-frequency"></canvas>
+                </div>
+            </article>
+
+            <article class="chart-card">
+                <div class="chart-header">
+                    <div>
+                        <h3>Overall Student Experience</h3>
+                        <p>Students' reported experience with AI tools.</p>
+                    </div>
+                    <span class="chart-tag">EXPERIENCE</span>
+                </div>
+                <div class="chart-container">
+                    <canvas id="chart-experience"></canvas>
+                </div>
+            </article>
+
+            <article class="chart-card">
+                <div class="chart-header">
+                    <div>
+                        <h3>Main Purposes of AI Usage</h3>
+                        <p>Tasks students use AI tools for.</p>
+                    </div>
+                    <span class="chart-tag">PURPOSE</span>
+                </div>
+                <div class="chart-container">
+                    <canvas id="chart-purpose"></canvas>
+                </div>
+            </article>
+
+        </section>
+    </section>
+
+    <!-- PAGE 2: AI TOOL USAGE -->
+    <section class="page" id="usage">
+
+        <div class="page-heading">
+            <div>
+                <p class="eyebrow">USAGE PATTERNS</p>
+                <h1>AI Tool Usage</h1>
+                <p class="page-description">
+                    Understand how frequently students use AI tools and
+                    how much time they spend using them.
+                </p>
+            </div>
+        </div>
+
+        <section class="chart-grid">
+
+            <article class="chart-card">
+                <div class="chart-header">
+                    <div>
+                        <h3>Usage Frequency</h3>
+                        <p>Distribution across reported usage categories.</p>
+                    </div>
+                    <span class="chart-tag">FREQUENCY</span>
+                </div>
+                <div class="chart-container">
+                    <canvas id="chart-usage-frequency"></canvas>
+                </div>
+            </article>
+
+            <article class="chart-card">
+                <div class="chart-header">
+                    <div>
+                        <h3>Time Spent Using AI Tools</h3>
+                        <p>Reported time spent using AI tools.</p>
+                    </div>
+                    <span class="chart-tag">TIME SPENT</span>
+                </div>
+                <div class="chart-container">
+                    <canvas id="chart-time-spent"></canvas>
+                </div>
+            </article>
+
+            <article class="chart-card chart-card-full">
+                <div class="chart-header">
+                    <div>
+                        <h3>Usage Frequency by AI Tool</h3>
+                        <p>Compare reported usage frequency across tools.</p>
+                    </div>
+                    <span class="chart-tag">COMPARISON</span>
+                </div>
+                <div class="chart-container chart-container-tall">
+                    <canvas id="chart-comparison-frequency"></canvas>
+                </div>
+            </article>
+
+        </section>
+    </section>
+
+    <!-- PAGE 3: STUDENT EXPERIENCE -->
+    <section class="page" id="experience">
+
+        <div class="page-heading">
+            <div>
+                <p class="eyebrow">LEARNING &amp; PRODUCTIVITY</p>
+                <h1>Student Experience &amp; Learning Impact</h1>
+                <p class="page-description">
+                    Explore student-reported helpfulness, productivity,
+                    learning improvement, and overall experience.
+                </p>
+            </div>
+        </div>
+
+        <section class="chart-grid">
+
+            <article class="chart-card">
+                <div class="chart-header">
+                    <div>
+                        <h3>Productivity Improvement</h3>
+                        <p>Students' views on productivity changes.</p>
+                    </div>
+                    <span class="chart-tag">PRODUCTIVITY</span>
+                </div>
+                <div class="chart-container">
+                    <canvas id="chart-learning-impact"></canvas>
+                </div>
+            </article>
+
+            <article class="chart-card">
+                <div class="chart-header">
+                    <div>
+                        <h3>Perceived Helpfulness of AI</h3>
+                        <p>How helpful students report AI tools to be.</p>
+                    </div>
+                    <span class="chart-tag">HELPFULNESS</span>
+                </div>
+                <div class="chart-container">
+                    <canvas id="chart-helpfulness"></canvas>
+                </div>
+            </article>
+
+            <article class="chart-card">
+                <div class="chart-header">
+                    <div>
+                        <h3>Learning Improvement</h3>
+                        <p>Students' reported learning improvement.</p>
+                    </div>
+                    <span class="chart-tag">LEARNING</span>
+                </div>
+                <div class="chart-container">
+                    <canvas id="chart-improvement"></canvas>
+                </div>
+            </article>
+
+            <article class="chart-card">
+                <div class="chart-header">
+                    <div>
+                        <h3>Recommendation to Others</h3>
+                        <p>Students' willingness to recommend AI tools.</p>
+                    </div>
+                    <span class="chart-tag">RECOMMENDATION</span>
+                </div>
+                <div class="chart-container">
+                    <canvas id="chart-recommend"></canvas>
+                </div>
+            </article>
+
+        </section>
+    </section>
+
+    <!-- PAGE 4: TOOL COMPARISON -->
+    <section class="page" id="comparison">
+
+        <div class="page-heading">
+            <div>
+                <p class="eyebrow">COMPARATIVE ANALYSIS</p>
+                <h1>Tool Comparison</h1>
+                <p class="page-description">
+                    Compare AI tools based on their reported usage,
+                    student experience, and survey responses.
+                </p>
+            </div>
+        </div>
+
+        <section class="chart-grid">
+
+            <article class="chart-card chart-card-full">
+                <div class="chart-header">
+                    <div>
+                        <h3>AI Tool Usage Comparison</h3>
+                        <p>Compare the number of recorded responses by tool.</p>
+                    </div>
+                    <span class="chart-tag">TOOL COMPARISON</span>
+                </div>
+                <div class="chart-container chart-container-tall">
+                    <canvas id="chart-tool-comparison"></canvas>
+                </div>
+            </article>
+
+            <article class="chart-card">
+                <div class="chart-header">
+                    <div>
+                        <h3>Overall Experience by Tool</h3>
+                        <p>Compare reported experiences across AI tools.</p>
+                    </div>
+                    <span class="chart-tag">EXPERIENCE</span>
+                </div>
+                <div class="chart-container">
+                    <canvas id="chart-experience-comparison"></canvas>
+                </div>
+            </article>
+
+            <article class="chart-card">
+                <div class="chart-header">
+                    <div>
+                        <h3>Student Recommendation</h3>
+                        <p>Compare recommendation responses.</p>
+                    </div>
+                    <span class="chart-tag">RECOMMENDATION</span>
+                </div>
+                <div class="chart-container">
+                    <canvas id="chart-recommend-comparison"></canvas>
+                </div>
+            </article>
+
+        </section>
+    </section>
+
+    <!-- FOOTER -->
+    <footer class="main-footer">
+        <span>DataVista · Student Research &amp; Analytics</span>
+        <span>AI Tools Usage Survey</span>
+    </footer>
+
+</main>
+
+
+</div>
+</body>
+</html>
